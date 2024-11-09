@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DashboardBlazor.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User>(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User, Role, int>(options)
     {
     }
 }
