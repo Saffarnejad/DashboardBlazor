@@ -1,6 +1,8 @@
 using DashboardBlazor.Components;
 using DashboardBlazor.Components.Account;
 using DashboardBlazor.Data;
+using DashboardBlazor.Repositories;
+using DashboardBlazor.Repositories.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddRadzenComponents();
 
 builder.Services.AddAuthentication(options =>
