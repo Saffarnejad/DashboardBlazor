@@ -1,0 +1,61 @@
+﻿@page "/Admin/Users"
+
+@inject IUserRepository UserRepository
+@inject NavigationManager NavigationManager
+
+<PageTitle>لیست کاربران</PageTitle>
+
+@if (IsProcessing)
+{
+
+}
+else
+{
+    <h3>Users</h3>
+    @if (UserList.Any())
+    {
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced"
+                        AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left"
+                        ShowPagingSummary="true" Data="@UserList" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or"
+                        SelectionMode="DataGridSelectionMode.Single">
+            <Columns>
+                <RadzenDataGridColumn Property="Id" Title="ID" Frozen="true" Width="80px" Filterable="true" />
+                <RadzenDataGridColumn Property="UserName" Title="User Name" Frozen="true" Width="120px" />
+                <RadzenDataGridColumn Property="Email" Title="Email" Width="160px" />
+                <RadzenDataGridColumn Property="EmailConfirmed" Title="Email Confirmed" Width="120px" />
+                <RadzenDataGridColumn Property="PhoneNumber" Title="Phone Number" Width="120px" />
+                <RadzenDataGridColumn Property="PhoneNumberConfirmed" Title="Phone Number Confirmed" Width="120px" />
+                <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
+                    <Template Context="user">
+                        <RadzenButton Shade="Shade.Lighter" Text="Details" ButtonStyle="ButtonStyle.Primary"
+                                      Click="@(() => NavigationManager.NavigateTo($"User/details/{user.Id}"))"></RadzenButton>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    }
+}
+
+@code {
+    private bool IsProcessing { get; set; } = true;
+    private IEnumerable<User> UserList { get; set; } = new List<User>();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadUsers();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadUsers()
+    {
+        IsProcessing = true;
+        StateHasChanged();
+        UserList = await UserRepository.GetAllAsync();
+        IsProcessing = false;
+    }
+}
