@@ -1,24 +1,24 @@
 ﻿@page "/weather"
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>آب و هوا</PageTitle>
 
-<h1>Weather</h1>
+<h1>آب و هوا</h1>
 
-<p>This component demonstrates showing data.</p>
+<p>این کامپوننت نمایش داده ها را نشان می دهد.</p>
 
 @if (forecasts == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>در حال بارگیری...</em></p>
 }
 else
 {
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+                <th>تاریخ</th>
+                <th>دما (سانتیگراد)</th>
+                <th>دما (فارنهایت)</th>
+                <th>خلاصه</th>
             </tr>
         </thead>
         <tbody>
