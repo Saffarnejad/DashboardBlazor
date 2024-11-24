@@ -6,5 +6,6 @@ namespace DashboardBlazor.Repositories.Interfaces
     {
         public Task<IEnumerable<User>> GetAllAsync();
         public Task<User> GetAsync(int id);
+        public Task<IEnumerable<string>> GetRolesAsync(User user);
     }
 }
