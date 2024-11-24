@@ -7,7 +7,13 @@
 
 @if (IsProcessing)
 {
-
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
+        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+            <Template>
+                بارگذاری
+            </Template>
+        </RadzenProgressBarCircular>
+    </RadzenStack>
 }
 else
 {
@@ -28,7 +34,7 @@ else
                 <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
                     <Template Context="user">
                         <RadzenButton Shade="Shade.Lighter" Text="Details" ButtonStyle="ButtonStyle.Primary"
-                                      Click="@(() => NavigationManager.NavigateTo($"User/details/{user.Id}"))"></RadzenButton>
+                                      Click="@(() => NavigationManager.NavigateTo($"Admin/User/details/{user.Id}"))"></RadzenButton>
                     </Template>
                 </RadzenDataGridColumn>
             </Columns>
@@ -53,9 +59,6 @@ else
 
     private async Task LoadUsers()
     {
-        IsProcessing = true;
-        StateHasChanged();
         UserList = await UserRepository.GetAllAsync();
-        IsProcessing = false;
     }
 }
