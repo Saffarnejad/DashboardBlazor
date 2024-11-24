@@ -1,0 +1,94 @@
+﻿@page "/Admin/User/Details/{id:int}"
+
+@inject IUserRepository UserRepository
+@inject NavigationManager NavigationManager
+
+<PageTitle>جزئیات کاربر</PageTitle>
+
+@if (IsProcessing)
+{
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
+        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+            <Template>
+                بارگذاری
+            </Template>
+        </RadzenProgressBarCircular>
+    </RadzenStack>
+}
+else
+{
+    <RadzenTemplateForm Data="@User" Submit="@((User args) => { Submit(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenStack>
+                    <RadzenFieldset Text="اطلاعات کاربر">
+                        <RadzenStack Gap="1rem">
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="4">
+                                    <RadzenLabel Text="نام کاربری" Component="UserName" />
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenTextBox Disabled="true" Style="width: 100%;" Name="UserName" @bind-Value="User.UserName" />
+                                </RadzenColumn>
+                            </RadzenRow>
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="4">
+                                    <RadzenLabel Text="ایمیل" Component="Email" />
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenTextBox Disabled="true" Style="width: 100%;" Name="Email" @bind-Value="User.Email" />
+                                </RadzenColumn>
+                            </RadzenRow>
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="4">
+                                    <RadzenLabel Text="شماره تلفن" Component="PhoneNumber" />
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenTextBox Style="width: 100%;" Name="PhoneNumber" @bind-Value="User.PhoneNumber" />
+                                </RadzenColumn>
+                            </RadzenRow>
+                        </RadzenStack>
+                    </RadzenFieldset>
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
+            <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool IsProcessing { get; set; } = true;
+    private User User { get; set; } = new User();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadUser();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadUser()
+    {
+        User = await UserRepository.GetAsync(Id);
+    }
+
+    void Submit(User arg)
+    {
+        //
+    }
+
+    void Cancel()
+    {
+        //
+    }
+}
