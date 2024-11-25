@@ -47,6 +47,14 @@ else
                                     <RadzenTextBox Style="width: 100%;" Name="PhoneNumber" @bind-Value="User.PhoneNumber" />
                                 </RadzenColumn>
                             </RadzenRow>
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="4">
+                                    <RadzenLabel Text="نقش ها" Component="Roles" />
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenTextBox Style="width: 100%;" Name="Roles" @bind-Value="Roles" />
+                                </RadzenColumn>
+                            </RadzenRow>
                         </RadzenStack>
                     </RadzenFieldset>
                 </RadzenStack>
@@ -65,21 +73,24 @@ else
 
     private bool IsProcessing { get; set; } = true;
     private User User { get; set; } = new User();
-
+    //private IEnumerable<string> Roles { get; set; } = new List<string>();
+    private string Roles { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await LoadUser();
+            await LoadUserAndRoles();
             IsProcessing = false;
             StateHasChanged();
         }
     }
 
-    private async Task LoadUser()
+    private async Task LoadUserAndRoles()
     {
         User = await UserRepository.GetAsync(Id);
+        var roles = await UserRepository.GetRolesAsync(User);
+        Roles = string.Join(", ", roles);
     }
 
     void Submit(User arg)
