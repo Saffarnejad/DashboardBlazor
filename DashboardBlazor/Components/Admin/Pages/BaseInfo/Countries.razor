@@ -1,21 +1,59 @@
 ﻿@page "/Admin/Countries"
+@inject ICountryRepository _countryRepository
+@inject NavigationManager NavigationManager
 
 <PageTitle>لیست کشور ها</PageTitle>
 
 @if (IsProcessing)
 {
-<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
-    <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
-        <Template>
-            بارگذاری
-        </Template>
-    </RadzenProgressBarCircular>
-</RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
+        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+            <Template>
+                بارگذاری
+            </Template>
+        </RadzenProgressBarCircular>
+    </RadzenStack>
 }
 else
 {
+    <h3>Countries</h3>
+    @if (CountryList.Any())
+    {
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced"
+                        AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left"
+                        ShowPagingSummary="true" Data="@CountryList" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or"
+                        SelectionMode="DataGridSelectionMode.Single">
+            <Columns>
+                <RadzenDataGridColumn Property="Id" Title="ID" Frozen="true" Width="80px" Filterable="true" />
+                <RadzenDataGridColumn Property="Name" Title="نام" Frozen="true" Width="120px" />
+                <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
+                    <Template Context="country">
+                        <RadzenButton Shade="Shade.Lighter" Text="ویرایش" ButtonStyle="ButtonStyle.Primary"
+                                      Click="@(() => NavigationManager.NavigateTo($"Admin/Country/Update/{country.Id}"))"></RadzenButton>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    }
 }
 
 @code {
     private bool IsProcessing { get; set; } = true;
+    private IEnumerable<Country> CountryList { get; set; } = new List<Country>();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadUsers();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadUsers()
+    {
+        CountryList = await _countryRepository.GetAllAsync();
+    }
 }
