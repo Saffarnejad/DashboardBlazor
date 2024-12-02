@@ -2,7 +2,7 @@
 @inject ICountryRepository _countryRepository
 @inject NavigationManager NavigationManager
 
-<PageTitle>لیست کشور ها</PageTitle>
+<PageTitle>لیست کشورها</PageTitle>
 
 @if (IsProcessing)
 {
@@ -16,7 +16,12 @@
 }
 else
 {
-    <h3>Countries</h3>
+    <h3>کشورها</h3>
+    <div class="my-2">
+        <a href="country/create" class="btn btn-secondary">
+            <i class="bi bi-plus-square"></i> اضافه کردن کشور جدید
+        </a>
+    </div>
     @if (CountryList.Any())
     {
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced"
