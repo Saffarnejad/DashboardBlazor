@@ -1,0 +1,94 @@
+﻿@page "/Admin/Country/Create"
+@page "/Admin/Country/Update/{id:int}"
+@inject ICountryRepository _countryRepository
+@inject NavigationManager NavigationManager
+
+<PageTitle>کشور</PageTitle>
+
+@if (IsProcessing)
+{
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
+        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+            <Template>
+                بارگذاری
+            </Template>
+        </RadzenProgressBarCircular>
+    </RadzenStack>
+}
+else
+{
+    <RadzenTemplateForm Data="@Country" Submit="@((Country args) => { Submit(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenStack>
+                    <RadzenFieldset Text="اطلاعات کاربر">
+                        <RadzenStack Gap="1rem">
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="4">
+                                    <RadzenLabel Text="نام" Component="Name" />
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenTextBox Style="width: 100%;" Name="Name" @bind-Value="Country.Name" />
+                                </RadzenColumn>
+                            </RadzenRow>
+                        </RadzenStack>
+                    </RadzenFieldset>
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="ذخیره" />
+            <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="بازگشت" Click="@Cancel" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Country Country { get; set; } = new Country();
+
+    private bool IsProcessing { get; set; } = true;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadCountry();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadCountry()
+    {
+        if (Id > 0)
+        {
+
+            Country = await _countryRepository.GetAsync(Id);
+        }
+    }
+
+    async Task Submit(Country arg)
+    {
+        IsProcessing = true;
+        if (Country.Id == 0)
+        {
+            await _countryRepository.CreateAsync(Country);
+        }
+        else
+        {
+            await _countryRepository.UpdateAsync(Country);
+        }
+        IsProcessing = false;
+        NavigationManager.NavigateTo("/Admin/Countries");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/Admin/Countries");
+    }
+}
