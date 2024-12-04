@@ -1,5 +1,5 @@
 ﻿@page "/Admin/Countries"
-@inject ICountryRepository _countryRepository
+@inject ICountryRepository CountryRepository
 @inject NavigationManager NavigationManager
 
 <PageTitle>لیست کشورها</PageTitle>
@@ -59,6 +59,6 @@ else
 
     private async Task LoadUsers()
     {
-        CountryList = await _countryRepository.GetAllAsync();
+        CountryList = await CountryRepository.GetAllAsync();
     }
 }
