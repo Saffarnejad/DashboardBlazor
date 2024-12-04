@@ -1,6 +1,6 @@
 ﻿@page "/Admin/Country/Create"
 @page "/Admin/Country/Update/{id:int}"
-@inject ICountryRepository _countryRepository
+@inject ICountryRepository CountryRepository
 @inject NavigationManager NavigationManager
 
 <PageTitle>کشور</PageTitle>
@@ -68,7 +68,7 @@ else
         if (Id > 0)
         {
 
-            Country = await _countryRepository.GetAsync(Id);
+            Country = await CountryRepository.GetAsync(Id);
         }
     }
 
@@ -77,11 +77,11 @@ else
         IsProcessing = true;
         if (Country.Id == 0)
         {
-            await _countryRepository.CreateAsync(Country);
+            await CountryRepository.CreateAsync(Country);
         }
         else
         {
-            await _countryRepository.UpdateAsync(Country);
+            await CountryRepository.UpdateAsync(Country);
         }
         IsProcessing = false;
         NavigationManager.NavigateTo("/Admin/Countries");
