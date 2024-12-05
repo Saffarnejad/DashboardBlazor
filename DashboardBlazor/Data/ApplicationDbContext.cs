@@ -7,6 +7,7 @@ namespace DashboardBlazor.Data
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) :
         IdentityDbContext<User, Role, int, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>(options)
     {
+        public DbSet<City> Cities { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Province> Provinces { get; set; }
 
