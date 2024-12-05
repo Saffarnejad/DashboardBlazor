@@ -8,6 +8,7 @@ namespace DashboardBlazor.Data
         IdentityDbContext<User, Role, int, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>(options)
     {
         public DbSet<Country> Countries { get; set; }
+        public DbSet<Province> Provinces { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
