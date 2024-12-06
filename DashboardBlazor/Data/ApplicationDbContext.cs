@@ -16,6 +16,7 @@ namespace DashboardBlazor.Data
             base.OnModelCreating(builder);
 
             new CountryConfiguration().Configure(builder.Entity<Country>());
+            new ProvinceConfiguration().Configure(builder.Entity<Province>());
             new RoleConfiguration().Configure(builder.Entity<Role>());
             new RoleClaimConfiguration().Configure(builder.Entity<RoleClaim>());
             new UserConfiguration().Configure(builder.Entity<User>());
