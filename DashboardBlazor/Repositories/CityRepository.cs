@@ -34,7 +34,9 @@ namespace DashboardBlazor.Repositories
 
         public async Task<IEnumerable<City>> GetAllAsync()
         {
-            return await _context.Cities.ToListAsync();
+            return await _context.Cities
+                .Include(c => c.Province)
+                .ToListAsync();
         }
 
         public async Task<City> GetAsync(int id)
