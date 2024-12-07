@@ -51,13 +51,13 @@ else
     {
         if (firstRender)
         {
-            await LoadUsers();
+            await LoadCountries();
             IsProcessing = false;
             StateHasChanged();
         }
     }
 
-    private async Task LoadUsers()
+    private async Task LoadCountries()
     {
         CountryList = await CountryRepository.GetAllAsync();
     }
