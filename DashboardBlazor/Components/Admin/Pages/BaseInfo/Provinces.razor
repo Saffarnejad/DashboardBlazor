@@ -1,0 +1,65 @@
+﻿@page "/Admin/Provinces"
+@inject IProvinceRepository ProvinceRepository
+@inject NavigationManager NavigationManager
+
+<PageTitle>لیست استان ها</PageTitle>
+
+@if (IsProcessing)
+{
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
+        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+            <Template>
+                بارگذاری
+            </Template>
+        </RadzenProgressBarCircular>
+    </RadzenStack>
+}
+else
+{
+    <h3>استان ها</h3>
+    <div class="my-2">
+        <a href="Admin/Province/Create" class="btn btn-secondary">
+            <i class="bi bi-plus-square"></i> اضافه کردن استان جدید
+        </a>
+    </div>
+    @if (ProvinceList.Any())
+    {
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced"
+                        AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left"
+                        ShowPagingSummary="true" Data="@ProvinceList" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or"
+                        SelectionMode="DataGridSelectionMode.Single">
+            <Columns>
+                <RadzenDataGridColumn Property="Id" Title="ID" Frozen="true" Width="80px" Filterable="true" />
+                <RadzenDataGridColumn Property="Name" Title="نام" Frozen="false" Width="120px" />
+                <RadzenDataGridColumn Property="Country.Name" Title="نام کشور" Frozen="false" Width="120px" />
+                <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
+                    <Template Context="province">
+                        <RadzenButton Shade="Shade.Lighter" Text="ویرایش" ButtonStyle="ButtonStyle.Primary"
+                                      Click="@(() => NavigationManager.NavigateTo($"Admin/Province/Update/{province.Id}"))"></RadzenButton>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    }
+}
+
+@code {
+    private bool IsProcessing { get; set; } = true;
+    private IEnumerable<Province> ProvinceList { get; set; } = new List<Province>();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadProvinces();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadProvinces()
+    {
+        ProvinceList = await ProvinceRepository.GetAllAsync();
+    }
+}
