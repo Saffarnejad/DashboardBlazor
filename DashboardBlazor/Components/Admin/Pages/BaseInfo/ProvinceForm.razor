@@ -1,0 +1,112 @@
+﻿@page "/Admin/Province/Create"
+@page "/Admin/Province/Update/{id:int}"
+@inject ICountryRepository CountryRepository
+@inject IProvinceRepository ProvinceRepository
+@inject NavigationManager NavigationManager
+
+<PageTitle>استان</PageTitle>
+
+@if (IsProcessing)
+{
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
+        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+            <Template>
+                بارگذاری
+            </Template>
+        </RadzenProgressBarCircular>
+    </RadzenStack>
+}
+else
+{
+    <RadzenTemplateForm Data="@Province" Submit="@((Province args) => { Submit(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenStack>
+                    <RadzenFieldset Text="اطلاعات استان">
+                        <RadzenStack Gap="1rem">
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="4">
+                                    <RadzenLabel Text="کشور" Component="Country" />
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenDropDown @bind-Value="Province.CountryId" Placeholder="انتخاب کشور" Data="@Countries" Style="width: 100%;" TextProperty="Name" ValueProperty="Id" Name="Country"></RadzenDropDown>
+                                    <RadzenCompareValidator Component="Country" Operator="CompareOperator.GreaterThan" Value="0" Text="کشور اجباری است" />
+                                </RadzenColumn>
+                            </RadzenRow>
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="4">
+                                    <RadzenLabel Text="نام" Component="Name" />
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenTextBox Style="width: 100%;" Name="Name" @bind-Value="Province.Name" />
+                                    <RadzenRequiredValidator Component="Name" Text="نام اجباری است" />
+                                </RadzenColumn>
+                            </RadzenRow>
+                        </RadzenStack>
+                    </RadzenFieldset>
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="ذخیره" />
+            <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="بازگشت" Click="@Cancel" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private IEnumerable<Country> Countries = new List<Country>();
+
+    [SupplyParameterFromForm]
+    private Province Province { get; set; } = new Province();
+
+    private bool IsProcessing { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadCountries();
+            await LoadProvince();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadCountries()
+    {
+        Countries = await CountryRepository.GetAllAsync();
+    }
+
+    private async Task LoadProvince()
+    {
+        if (Id > 0)
+        {
+
+            Province = await ProvinceRepository.GetAsync(Id);
+        }
+    }
+
+    async Task Submit(Province arg)
+    {
+        IsProcessing = true;
+        if (Province.Id == 0)
+        {
+            await ProvinceRepository.CreateAsync(Province);
+        }
+        else
+        {
+            await ProvinceRepository.UpdateAsync(Province);
+        }
+        IsProcessing = false;
+        NavigationManager.NavigateTo("/Admin/Provinces");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/Admin/Provinces");
+    }
+}
