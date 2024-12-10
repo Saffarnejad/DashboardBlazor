@@ -1,0 +1,112 @@
+﻿@page "/Admin/City/Create"
+@page "/Admin/City/Update/{id:int}"
+@inject ICityRepository CityRepository
+@inject IProvinceRepository ProvinceRepository
+@inject NavigationManager NavigationManager
+
+<PageTitle>شهر</PageTitle>
+
+@if (IsProcessing)
+{
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
+        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+            <Template>
+                بارگذاری
+            </Template>
+        </RadzenProgressBarCircular>
+    </RadzenStack>
+}
+else
+{
+    <RadzenTemplateForm Data="@City" Submit="@(async (City args) => { await Submit(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenStack>
+                    <RadzenFieldset Text="اطلاعات شهر">
+                        <RadzenStack Gap="1rem">
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="4">
+                                    <RadzenLabel Text="استان" Component="Province" />
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenDropDown @bind-Value="City.ProvinceId" Placeholder="انتخاب استان" Data="@Provinces" Style="width: 100%;" TextProperty="Name" ValueProperty="Id" Name="Province"></RadzenDropDown>
+                                    <RadzenCompareValidator Component="Province" Operator="CompareOperator.GreaterThan" Value="0" Text="استان اجباری است" />
+                                </RadzenColumn>
+                            </RadzenRow>
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="4">
+                                    <RadzenLabel Text="نام" Component="Name" />
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenTextBox Style="width: 100%;" Name="Name" @bind-Value="City.Name" />
+                                    <RadzenRequiredValidator Component="Name" Text="نام اجباری است" />
+                                </RadzenColumn>
+                            </RadzenRow>
+                        </RadzenStack>
+                    </RadzenFieldset>
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="ذخیره" />
+            <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="بازگشت" Click="@Cancel" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private IEnumerable<Province> Provinces = new List<Province>();
+
+    [SupplyParameterFromForm]
+    private City City { get; set; } = new City();
+
+    private bool IsProcessing { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadCity();
+            await LoadProvinces();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadProvinces()
+    {
+        Provinces = await ProvinceRepository.GetAllAsync();
+    }
+
+    private async Task LoadCity()
+    {
+        if (Id > 0)
+        {
+
+            City = await CityRepository.GetAsync(Id);
+        }
+    }
+
+    async Task Submit(City arg)
+    {
+        IsProcessing = true;
+        if (City.Id == 0)
+        {
+            await CityRepository.CreateAsync(City);
+        }
+        else
+        {
+            await CityRepository.UpdateAsync(City);
+        }
+        IsProcessing = false;
+        NavigationManager.NavigateTo("/Admin/Cities");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/Admin/Cities");
+    }
+}
