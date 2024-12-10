@@ -1,65 +1,87 @@
 ﻿@page "/Admin/Cities"
 @inject ICityRepository CityRepository
+@inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 
-<PageTitle>لیست شهرها</PageTitle>
+    <PageTitle>لیست شهرها</PageTitle>
 
-@if (IsProcessing)
-{
-    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
-        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
-            <Template>
-                بارگذاری
-            </Template>
-        </RadzenProgressBarCircular>
-    </RadzenStack>
-}
-else
-{
-    <h3>شهرها</h3>
-    <div class="my-2">
-        <a href="Admin/City/Create" class="btn btn-secondary">
-            <i class="bi bi-plus-square"></i> اضافه کردن شهر جدید
-        </a>
-    </div>
-    @if (CityList.Any())
+    @if (IsProcessing)
     {
-        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced"
-                        AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left"
-                        ShowPagingSummary="true" Data="@CityList" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or"
-                        SelectionMode="DataGridSelectionMode.Single">
-            <Columns>
-                <RadzenDataGridColumn Property="Id" Title="ID" Frozen="true" Width="80px" Filterable="true" />
-                <RadzenDataGridColumn Property="Name" Title="نام" Frozen="false" Width="120px" />
-                <RadzenDataGridColumn Property="Province.Name" Title="نام شهر" Frozen="false" Width="120px" />
-                <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
-                    <Template Context="city">
-                        <RadzenButton Shade="Shade.Lighter" Text="ویرایش" ButtonStyle="ButtonStyle.Primary"
-                                      Click="@(() => NavigationManager.NavigateTo($"Admin/City/Update/{city.Id}"))"></RadzenButton>
-                    </Template>
-                </RadzenDataGridColumn>
-            </Columns>
-        </RadzenDataGrid>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
+            <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+                <Template>
+                    بارگذاری
+                </Template>
+            </RadzenProgressBarCircular>
+        </RadzenStack>
     }
-}
-
-@code {
-    private bool IsProcessing { get; set; } = true;
-    private IEnumerable<City> CityList { get; set; } = new List<City>();
-
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    else
     {
-        if (firstRender)
+        <h3>شهرها</h3>
+        <div class="my-2">
+            <RadzenButton Text="اضافه کردن شهر جدید" Icon="add_circle" ButtonStyle="ButtonStyle.Success"
+                          Click=@(() => NavigationManager.NavigateTo($"Admin/City/Create")) />
+        </div>
+        @if (CityList.Any())
         {
-            await LoadCities();
-            IsProcessing = false;
-            StateHasChanged();
+            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced"
+                            AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left"
+                            ShowPagingSummary="true" Data="@CityList" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or"
+                            SelectionMode="DataGridSelectionMode.Single">
+                <Columns>
+                    <RadzenDataGridColumn Property="Id" Title="شناسه" Frozen="true" Width="20px" />
+                    <RadzenDataGridColumn Property="Name" Title="نام" Frozen="false" Width="60px" />
+                    <RadzenDataGridColumn Property="Province.Name" Title="نام استان" Frozen="false" Width="60px" />
+                    <RadzenDataGridColumn Title="عملیات" Sortable="false" Filterable="false" Width="60px" TextAlign="TextAlign.Center">
+                        <Template Context="city">
+                            <RadzenButton Text="ویرایش" ButtonStyle="ButtonStyle.Secondary" Click="@(() => NavigationManager.NavigateTo($"Admin/City/Update/{city.Id}"))"></RadzenButton>
+                            <RadzenButton Text="حذف" ButtonStyle="ButtonStyle.Danger" Click="@(async () =>await ConfirmDelete(city.Id))"></RadzenButton>
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
         }
     }
 
-    private async Task LoadCities()
-    {
-        CityList = await CityRepository.GetAllAsync();
+    @code {
+        private bool IsProcessing { get; set; } = true;
+        private IEnumerable<City> CityList { get; set; } = new List<City>();
+
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await LoadCities();
+                IsProcessing = false;
+                StateHasChanged();
+            }
+        }
+
+        private async Task LoadCities()
+        {
+            CityList = await CityRepository.GetAllAsync();
+        }
+
+        private async Task ConfirmDelete(int id)
+        {
+            var isConfirm = await JSRuntime.Confirmation("حذف شهر", "آیا مطمئن هستید؟", SwalIcon.Error);
+
+            IsProcessing = true;
+            if (isConfirm)
+            {
+                var result = await CityRepository.DeleteAsync(id);
+                if (result)
+                {
+                    await JSRuntime.Toast("شهر با موفقیت حذف شد", SwalIcon.Success);
+                    await LoadCities();
+                    StateHasChanged();
+                }
+                else
+                {
+                    await JSRuntime.Toast("هنگام حذف خطایی رخ داد", SwalIcon.Error);
+                }
+            }
+            IsProcessing = false;
+        }
     }
-}
