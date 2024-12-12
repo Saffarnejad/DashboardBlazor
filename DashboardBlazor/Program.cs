@@ -1,12 +1,15 @@
 using DashboardBlazor.Components;
 using DashboardBlazor.Components.Account;
 using DashboardBlazor.Data;
+using DashboardBlazor.Helpers.CustomComponents;
 using DashboardBlazor.Repositories;
 using DashboardBlazor.Repositories.Interfaces;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
+using Radzen.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,9 @@ builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IProvinceRepository, ProvinceRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddRadzenComponents();
+var activator = new RadzenComponentActivator();
+activator.Override(typeof(RadzenDataGrid<>), typeof(PersianRadzenDataGrid<>));
+builder.Services.AddSingleton<IComponentActivator>(activator);
 
 builder.Services.AddAuthentication(options =>
     {
