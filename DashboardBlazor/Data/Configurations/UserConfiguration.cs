@@ -11,8 +11,8 @@ namespace DashboardBlazor.Data.Configurations
             var user = new User()
             {
                 Id = 1,
-                UserName = "vira1368",
-                NormalizedUserName = "VIRA1368",
+                UserName = "vira1368@gmail.com",
+                NormalizedUserName = "VIRA1368@GMAIL.COM",
                 Email = "vira1368@gmail.com",
                 NormalizedEmail = "VIRA1368@GMAIL.COM",
                 EmailConfirmed = true,
