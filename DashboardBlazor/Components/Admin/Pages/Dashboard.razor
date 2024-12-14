@@ -1,0 +1,240 @@
+﻿@page "/Admin/Dashboard"
+
+<PageTitle>داشبورد</PageTitle>
+
+@if (IsProcessing)
+{
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12" Gap="2rem">
+        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+            <Template>
+                بارگذاری
+            </Template>
+        </RadzenProgressBarCircular>
+    </RadzenStack>
+}
+else
+{
+    <h3>داشبورد</h3>
+    <RadzenRow class="rz-text-align-center" Gap="1rem">
+        <RadzenColumn class="rz-p-5">
+            <h4>نمودار دایره ای</h4>
+            <RadzenStack class="rz-p-0 rz-p-md-6 rz-p-lg-12" AlignItems="AlignItems.Center">
+                <RadzenStack Style="width: 100%; max-width: 600px;">
+                    <RadzenChart>
+                        <RadzenPieSeries Data="@revenue" Title="Revenue" CategoryProperty="Quarter" ValueProperty="Revenue">
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </RadzenPieSeries>
+                    </RadzenChart>
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenColumn>
+        <RadzenColumn class="rz-p-5">
+            <h4>نمودار ستونی</h4>
+            <RadzenChart>
+                <RadzenColumnSeries FillRange="@fillRange" Data="@revenue2024" CategoryProperty="Quarter" Title="2024" LineType="LineType.Dashed" ValueProperty="Revenue">
+                    <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                </RadzenColumnSeries>
+                <RadzenColumnSeries FillRange="@fillRange" Data="@revenue2023" CategoryProperty="Quarter" Title="2023" ValueProperty="Revenue">
+                    <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                </RadzenColumnSeries>
+                <RadzenColumnOptions Radius="5" />
+                <RadzenValueAxis Formatter="@FormatAsUSD">
+                    <RadzenGridLines Visible="true" />
+                    <RadzenAxisTitle Text="Revenue in USD" />
+                </RadzenValueAxis>
+                <RadzenLegend Visible="false" />
+            </RadzenChart>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow class="rz-text-align-center" Gap="1rem">
+        <RadzenColumn class="rz-p-5">
+            <h4>نمودار روند</h4>
+            <RadzenStack class="rz-p-0 rz-p-md-6 rz-p-lg-12">
+                <RadzenChart>
+                    <RadzenLineSeries Smooth="true" Data="@revenue2022" CategoryProperty="Date" Title="2022" ValueProperty="Revenue" RenderingOrder="1">
+                        <RadzenSeriesTrendLine Visible="@trend" Stroke="var(--rz-danger-dark)" LineType="LineType.Dashed" />
+                        <RadzenSeriesMedianLine Visible="@median" Stroke="var(--rz-success-dark)" LineType="LineType.Dotted" />
+                        <RadzenSeriesMeanLine Visible="@mean" Stroke="var(--rz-info-dark)" LineType="LineType.Dotted" />
+                        <RadzenSeriesModeLine Visible="@mode" Stroke="var(--rz-warning-darker)" LineType="LineType.Dotted" />
+                    </RadzenLineSeries>
+                    <RadzenCategoryAxis Padding="20" />
+                    <RadzenValueAxis Formatter="@FormatAsUSD">
+                        <RadzenGridLines Visible="true" />
+                        <RadzenAxisTitle Text="Revenue in USD" />
+                    </RadzenValueAxis>
+                </RadzenChart>
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+}
+
+@code {
+    private bool IsProcessing { get; set; } = true;
+
+    bool showDataLabels = false;
+    bool trend = true;
+    bool median = false;
+    bool mean = false;
+    bool mode = false;
+
+    class DataItem
+    {
+        public string Quarter { get; set; }
+        public double Revenue { get; set; }
+        public string Date { get; set; }
+    }
+
+    DataItem[] revenue = new DataItem[] {
+        new DataItem
+        {
+            Quarter = "Q1",
+            Revenue = 30000
+        },
+        new DataItem
+        {
+            Quarter = "Q2",
+            Revenue = 40000
+        },
+        new DataItem
+        {
+            Quarter = "Q3",
+            Revenue = 50000
+        },
+        new DataItem
+        {
+            Quarter = "Q4",
+            Revenue = 80000
+        },
+    };
+
+    string FormatAsUSD(object value)
+    {
+        return ((double)value).ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
+    }
+
+    List<SeriesColorRange> fillRange = new List<SeriesColorRange>()
+{
+        new SeriesColorRange() {Min = 0, Max = 275000, Color = "red"},
+        new SeriesColorRange() {Min = 275000, Max = 324000, Color = "orange"},
+        new SeriesColorRange() {Min = 324000, Max = 10000000, Color = "#06cd06"},
+    };
+
+    DataItem[] revenue2022 = new DataItem[] {
+        new DataItem
+        {
+            Date = "Jan",
+            Revenue = 234000
+        },
+        new DataItem
+        {
+            Date = "Feb",
+            Revenue = 269000
+        },
+        new DataItem
+        {
+            Date = "Mar",
+            Revenue = 233000
+        },
+        new DataItem
+        {
+            Date = "Apr",
+            Revenue = 244000
+        },
+        new DataItem
+        {
+            Date = "May",
+            Revenue = 214000
+        },
+        new DataItem
+        {
+            Date = "Jun",
+            Revenue = 253000
+        },
+        new DataItem
+        {
+            Date = "Jul",
+            Revenue = 274000
+        },
+        new DataItem
+        {
+            Date = "Aug",
+            Revenue = 284000
+        },
+        new DataItem
+        {
+            Date = "Sept",
+            Revenue = 273000
+        },
+        new DataItem
+        {
+            Date = "Oct",
+            Revenue = 282000
+        },
+        new DataItem
+        {
+            Date = "Nov",
+            Revenue = 289000
+        },
+        new DataItem
+        {
+            Date = "Dec",
+            Revenue = 294000
+        }
+    };
+
+    DataItem[] revenue2023 = new DataItem[] {
+        new DataItem
+        {
+            Quarter = "Q1",
+            Revenue = 234000
+        },
+        new DataItem
+        {
+            Quarter = "Q2",
+            Revenue = 284000
+        },
+        new DataItem
+        {
+            Quarter = "Q3",
+            Revenue = 274000
+        },
+        new DataItem
+        {
+            Quarter = "Q4",
+            Revenue = 294000
+        },
+    };
+
+    DataItem[] revenue2024 = new DataItem[] {
+        new DataItem
+        {
+            Quarter = "Q1",
+            Revenue = 254000
+        },
+        new DataItem
+        {
+            Quarter = "Q2",
+            Revenue = 324000
+        },
+        new DataItem
+        {
+            Quarter = "Q3",
+            Revenue = 354000
+        },
+        new DataItem
+        {
+            Quarter = "Q4",
+            Revenue = 394000
+        },
+
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+}
