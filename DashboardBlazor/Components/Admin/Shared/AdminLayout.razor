@@ -2,30 +2,43 @@
 
 <RadzenLayout>
     <RadzenHeader>
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-            <RadzenSidebarToggle Click="@(() => isSidebarExpanded = !isSidebarExpanded)" />
-            <RadzenLabel Text="داشبورد" />
-        </RadzenStack>
+        <RadzenRow>
+            <RadzenColumn>
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+                    <RadzenSidebarToggle Click="@(() => isSidebarExpanded = !isSidebarExpanded)" />
+                    <RadzenLabel Text="پنل مدیریت" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn>
+                <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.End" Gap="0">
+                    <RadzenProfileMenu>
+                        <Template>
+                            <RadzenIcon Icon="account_circle" Style="font-size:2rem"></RadzenIcon>
+                        </Template>
+                        <ChildContent>
+                            <RadzenProfileMenuItem Text="مدیریت اکانت" Path="/Account/Manage" Icon="manage_accounts"></RadzenProfileMenuItem>
+                            <RadzenProfileMenuItem Text="پیام ها" Path="buttons" Icon="mail"></RadzenProfileMenuItem>
+                            <RadzenProfileMenuItem Text="تغییر کلمه عبور" Path="/Account/Manage/ChangePassword" Icon="password"></RadzenProfileMenuItem>
+                            <RadzenProfileMenuItem Text="خروج" Path="/Account/LogOut" Icon="logout"></RadzenProfileMenuItem>
+                        </ChildContent>
+                    </RadzenProfileMenu>
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
     </RadzenHeader>
     <RadzenSidebar @bind-Expanded="@isSidebarExpanded">
         <RadzenPanelMenu Multiple="false">
-            <RadzenPanelMenuItem Text="خانه" Icon="home" Path="/" />
-            <RadzenPanelMenuItem Text="شمارنده" Icon="counter_1" Path="/counter" />
-            <RadzenPanelMenuItem Text="آب و هوا" Icon="weather_mix" Path="/weather" />
-            <RadzenPanelMenuItem Text="احراز هویت" Icon="account_box" Path="/auth" />
+            <RadzenPanelMenuItem Text="داشبورد" Path="/Admin/Dashboard" Icon="dashboard" />
             <RadzenPanelMenuItem Text="مدیریت کاربران" Icon="account_box">
                 <RadzenPanelMenuItem Text="لیست کاربران" Path="/Admin/Users" Icon="group"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="لیست نقش ها" Path="/roles" Icon="policy"></RadzenPanelMenuItem>
             </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="اطلاعات پایه" Icon="home">
-                <RadzenPanelMenuItem Text="کشورها" Path="/Admin/Countries" Icon="account_circle"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="استان ها" Path="/Admin/Provinces" Icon="line_weight"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="شهرها" Path="/Admin/Cities" Icon="line_weight"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="اطلاعات پایه" Icon="info">
+                <RadzenPanelMenuItem Text="کشورها" Path="/Admin/Countries" Icon="public"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="استان ها" Path="/Admin/Provinces" Icon="flag"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="شهرها" Path="/Admin/Cities" Icon="location_city"></RadzenPanelMenuItem>
             </RadzenPanelMenuItem>
         </RadzenPanelMenu>
-        <div class="rz-p-4">
-            Sidebar
-        </div>
     </RadzenSidebar>
     <RadzenBody>
         <div class="rz-p-4">
