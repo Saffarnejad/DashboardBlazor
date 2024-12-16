@@ -40,10 +40,10 @@ namespace Microsoft.AspNetCore.Routing
                 return TypedResults.Challenge(properties, [provider]);
             });
 
-            accountGroup.MapPost("/Logout", async (
+            accountGroup.MapGet("/Logout", async (
                 ClaimsPrincipal user,
                 SignInManager<User> signInManager,
-                [FromForm] string returnUrl) =>
+                string returnUrl) =>
             {
                 await signInManager.SignOutAsync();
                 return TypedResults.LocalRedirect($"~/{returnUrl}");
