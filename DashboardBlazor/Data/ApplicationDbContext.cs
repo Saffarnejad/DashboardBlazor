@@ -9,6 +9,7 @@ namespace DashboardBlazor.Data
     {
         public DbSet<City> Cities { get; set; }
         public DbSet<Country> Countries { get; set; }
+        public DbSet<Product> Products { get; set; }
         public DbSet<Province> Provinces { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -17,6 +18,7 @@ namespace DashboardBlazor.Data
 
             new CityConfiguration().Configure(builder.Entity<City>());
             new CountryConfiguration().Configure(builder.Entity<Country>());
+            new ProductConfiguration().Configure(builder.Entity<Product>());
             new ProvinceConfiguration().Configure(builder.Entity<Province>());
             new RoleConfiguration().Configure(builder.Entity<Role>());
             new RoleClaimConfiguration().Configure(builder.Entity<RoleClaim>());
