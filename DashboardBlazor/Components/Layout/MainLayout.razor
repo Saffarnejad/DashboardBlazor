@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
+@inject NavigationManager NavigationManager
+
 <RadzenLayout>
     <RadzenHeader>
         <RadzenRow>
@@ -15,9 +17,16 @@
             <RadzenColumn>
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0" JustifyContent="JustifyContent.End" class="rz-p-sm-2">
                     <RadzenMenu>
-                        <RadzenMenuItem Text="کشورها" Path="/Admin/Countries" Icon="account_box"></RadzenMenuItem>
-                        <RadzenMenuItem Text="ثبت نام" Path="/Account/Register" Icon="account_box"></RadzenMenuItem>
-                        <RadzenMenuItem Text="ورود" Path="/Account/Login" Icon="account_box"></RadzenMenuItem>
+                        <AuthorizeView>
+                            <NotAuthorized>
+                                <RadzenMenuItem Text="ثبت نام" Path="/Account/Register" Icon="how_to_reg"></RadzenMenuItem>
+                                <RadzenMenuItem Text="ورود" Path="/Account/Login" Icon="login"></RadzenMenuItem>
+                            </NotAuthorized>
+                            <Authorized>
+                                <RadzenMenuItem Text="پنل مدیریت" Path="/Admin/Dashboard" Icon="dashboard"></RadzenMenuItem>
+                                <RadzenMenuItem Text="خروج" Path=@($"/Account/LogOut?returnUrl={currentUrl}") Icon="logout"></RadzenMenuItem>
+                            </Authorized>
+                        </AuthorizeView>
                     </RadzenMenu>
                 </RadzenStack>
             </RadzenColumn>
@@ -36,4 +45,22 @@
 
 @code {
     string year = new System.Globalization.PersianCalendar().GetYear(DateTime.Now).ToString();
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
 }
