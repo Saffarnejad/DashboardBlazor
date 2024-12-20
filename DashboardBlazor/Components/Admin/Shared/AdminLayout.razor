@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
+@inject NavigationManager NavigationManager
+
 <RadzenLayout>
     <RadzenHeader>
         <RadzenRow>
@@ -19,7 +21,7 @@
                             <RadzenProfileMenuItem Text="مدیریت اکانت" Path="/Account/Manage" Icon="manage_accounts"></RadzenProfileMenuItem>
                             <RadzenProfileMenuItem Text="پیام ها" Path="buttons" Icon="mail"></RadzenProfileMenuItem>
                             <RadzenProfileMenuItem Text="تغییر کلمه عبور" Path="/Account/Manage/ChangePassword" Icon="password"></RadzenProfileMenuItem>
-                            <RadzenProfileMenuItem Text="خروج" Path="/Account/LogOut" Icon="logout"></RadzenProfileMenuItem>
+                            <RadzenProfileMenuItem Text="خروج" Path=@($"/Account/LogOut?returnUrl={currentUrl}") Icon="logout"></RadzenProfileMenuItem>
                         </ChildContent>
                     </RadzenProfileMenu>
                 </RadzenStack>
@@ -37,6 +39,7 @@
                 <RadzenPanelMenuItem Text="کشورها" Path="/Admin/Countries" Icon="public"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="استان ها" Path="/Admin/Provinces" Icon="flag"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="شهرها" Path="/Admin/Cities" Icon="location_city"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="محصولات" Path="/Admin/Products" Icon="category"></RadzenPanelMenuItem>
             </RadzenPanelMenuItem>
         </RadzenPanelMenu>
     </RadzenSidebar>
@@ -53,4 +56,22 @@
 @code {
     bool isSidebarExpanded = true;
     string year = new System.Globalization.PersianCalendar().GetYear(DateTime.Now).ToString();
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
 }
