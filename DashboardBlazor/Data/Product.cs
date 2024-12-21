@@ -10,6 +10,6 @@ namespace DashboardBlazor.Data
         [MaxLength(50)]
         public string Name { get; set; }
 
-        public DateTime CreatedDateTime { get; set; } = DateTime.Now;
+        public DateTime CreatedDateTime { get; set; } = DateTime.Now.Date;
     }
 }
