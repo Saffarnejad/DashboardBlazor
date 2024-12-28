@@ -18,6 +18,11 @@ namespace DashboardBlazor.Helpers.Extensions
         {
             await js.InvokeVoidAsync("ShowToast", title, icon.ToString().ToLower());
         }
+
+        public static async Task PersianDatePicker(this IJSRuntime js, string? startDate = null, string? endDate = null)
+        {
+            await js.InvokeVoidAsync("PersianDatepickerInit", startDate, endDate);
+        }
     }
 
     public enum ToastrType
