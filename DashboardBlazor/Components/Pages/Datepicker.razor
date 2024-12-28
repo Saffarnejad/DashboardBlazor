@@ -1,0 +1,29 @@
+﻿@page "/datepicker"
+@inject IJSRuntime JSRuntime
+@using DashboardBlazor.Helpers.Extensions;
+
+<PageTitle>انتخابگر تاریخ</PageTitle>
+
+<h1>انتخابگر تاریخ</h1>
+
+<p>این Datepicker براساس تقویم شمسی نمایش داده می شود.</p>
+
+<RadzenRow AlignItems="AlignItems.End" Wrap="FlexWrap.Wrap" Gap="1rem" class="rz-p-sm-12">
+    <RadzenColumn Size="12" SizeMD="6" SizeLG="3">
+        <RadzenFormField Text="تاریخ" Variant="Variant.Outlined" Style="width: 100%;">
+            <RadzenTextBox class="bpdp" />
+        </RadzenFormField>
+    </RadzenColumn>
+</RadzenRow>
+
+@code{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.PersianDatePicker();
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+}
